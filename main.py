@@ -184,13 +184,13 @@ def get_value_V(psi_l, oper_value, psi_m):
 def plot(U0, U, psi1, psi2):
     plt.axis([A, B, -1, W])
     plt.plot(X, U0, 'b-', linewidth=4.0, label="U0(x)")
-    plt.plot(X, U, 'g-', linewidth=2.0, label="U(x)")
+    plt.plot(X, U, 'g-', linewidth=1.5, label="U(x)")
     Zero = np.zeros(n, dtype=float)
     plt.plot(X, Zero, 'k-', linewidth=1.0)  # abscissa axis
-    plt.plot(X, psi1, 'm-', linewidth=5.0, label="'$\psi$1'")
-    plt.plot(X, psi2, 'b-', linewidth=1.0, label="'$\psi$2'")
+    plt.plot(X, psi1, color=(0.9, 0.4, 0.0), linewidth=4.0, label="$\psi$1")
+    plt.plot(X, psi2, color=(0.5, 0.0, 0.0), linewidth=1.5, label="$\psi$2")
     plt.xlabel("X", fontsize=18, color="k")
-    plt.ylabel("U0(x), U(x), '$\psi$1', '$\psi$2' ", fontsize=18, color="k")
+    plt.ylabel("U0(x), U(x), $\psi$1, $\psi$2 ", fontsize=18, color="k")
     plt.grid(True)
     plt.legend(fontsize=16, shadow=True, fancybox=True, loc='upper right')
     plt.savefig("second", dpi=300)
