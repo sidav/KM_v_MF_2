@@ -14,13 +14,14 @@ def convert_angstrom_to_atomic_units(value):
 def convert_electronvolt_to_atomic_units(value):
     return value / 27.212
 
+
 class Pristrelki_method:
     # initial data (atomic units)
     L = convert_angstrom_to_atomic_units(2.0)
     A = -L
     B = +L
     # number of mesh node
-    n = 1001  # odd integer number
+    n = 113  # odd integer number
 
     def __init__(self, fun_U, U0, ne, e2, count_e):
         self.U = fun_U
@@ -101,7 +102,7 @@ class Pristrelki_method:
         f = der1 - der2
         return f
 
-    def m_bis(self, x1, x2, tol):
+    def bisection_method(self, x1, x2, tol):
         while abs(x2 - x1) > tol:
             xr = (x1 + x2) / 2.0
             if self.f_fun(e=x2) * self.f_fun(e=xr) < 0.0:
@@ -131,7 +132,7 @@ class Pristrelki_method:
                 if Log1 and Log2:
                     energy1 = ee[i - 1]
                     energy2 = ee[i]
-                    eval = self.m_bis(energy1, energy2, tol)
+                    eval = self.bisection_method(energy1, energy2, tol)
                     energy.append(eval)
                     coefPsi = self.average_value(self.Psi, self.Psi)
                     self.Psi[:] = self.Psi[:] / math.sqrt(coefPsi[0])
@@ -145,23 +146,26 @@ class Pristrelki_method:
                         break
         return energy, fun_psi
 
+
+
+#############################################################
 V0 = convert_electronvolt_to_atomic_units(20)
 L = convert_angstrom_to_atomic_units(2.0)
 W = 5.0
 A = -L
 B = +L
-n = 1001
+n = 113
 X = np.linspace(A, B, n)  # forward
 
 def fun_U_0(x):
     if (abs(x) < L):
-        return V0 * erf(x)
+        return float((-1 + (x + L) / (2 * L)) if abs(x) < L else W)
     else:
         return W
 
 def fun_U(x):
-    if 0 < x < 0.5:
-        return fun_U_0(x) + 2.8
+    if -0.5 < x < 0.0:
+        return fun_U_0(x) + 1.4
     else:
         return fun_U_0(x)
 
@@ -179,8 +183,8 @@ def get_value_V(psi_l, oper_value, psi_m):
 
 def plot(U0, U, psi1, psi2):
     plt.axis([A, B, -1, W])
-    plt.plot(X, U0, 'g-', linewidth=5.0, label="U0(x)")
-    plt.plot(X, U, 'y-', linewidth=1.0, label="U(x)")
+    plt.plot(X, U0, 'b-', linewidth=4.0, label="U0(x)")
+    plt.plot(X, U, 'g-', linewidth=2.0, label="U(x)")
     Zero = np.zeros(n, dtype=float)
     plt.plot(X, Zero, 'k-', linewidth=1.0)  # abscissa axis
     plt.plot(X, psi1, 'm-', linewidth=5.0, label="'$\psi$1'")
