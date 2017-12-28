@@ -20,14 +20,13 @@ class Shooting_method:
     L = convert_angstrom_to_atomic_units(2.0)
     A = -L
     B = +L
-    # number of mesh node
-    n = 113  # odd integer number
 
-    def __init__(self, fun_U, U0, ne, e2, count_e):
+    def __init__(self, fun_U, U0, ne, e2, count_e, n):
         self.U = fun_U
         self.U0 = U0
         self.ne = ne
         self.e2 = e2
+        self.n = n
 
         self.X = np.linspace(self.A, self.B, self.n)  # forward
         self.XX = np.linspace(self.B, self.A, self.n)  # backwards
@@ -154,7 +153,7 @@ L = convert_angstrom_to_atomic_units(2.0)
 W = 4.0
 A = -L
 B = +L
-n = 113
+n = 257
 X = np.linspace(A, B, n)  # forward
 
 def fun_U_0(x):
@@ -187,10 +186,10 @@ def plot(U0, U, psi1, psi2):
     plt.plot(X, U, 'g-', linewidth=1.5, label="U(x)")
     Zero = np.zeros(n, dtype=float)
     plt.plot(X, Zero, 'k-', linewidth=1.0)  # abscissa axis
-    plt.plot(X, psi1, color=(0.9, 0.4, 0.0), linewidth=4.0, label="$\psi$1")
-    plt.plot(X, psi2, color=(0.5, 0.0, 0.0), linewidth=1.5, label="$\psi$2")
+    plt.plot(X, psi1, color=(0.9, 0.4, 0.0), linewidth=4.0, label="$\psi$_shoot")
+    plt.plot(X, psi2, color=(0.5, 0.0, 0.0), linewidth=1.5, label="$\psi$_perturb")
     plt.xlabel("X", fontsize=18, color="k")
-    plt.ylabel("U0(x), U(x), $\psi$1, $\psi$2 ", fontsize=18, color="k")
+    plt.ylabel("U0(x), U(x), $\psi$_shoot, $\psi$_perturb ", fontsize=18, color="k")
     plt.grid(True)
     plt.legend(fontsize=16, shadow=True, fancybox=True, loc='upper right')
     plt.savefig("graphs", dpi=300)
@@ -211,7 +210,7 @@ def convergence_check(V, energy_U0, psi_U0, value_fun_V ):
 
 
 
-shooting_for_U0 = Shooting_method(fun_U_0, U0=-0.99999, ne=101, e2=15, count_e=10)
+shooting_for_U0 = Shooting_method(fun_U_0, U0=-0.99999, ne=101, e2=15, count_e=10, n=n)
 energy_U0, psi_U0 = shooting_for_U0.get_energy()
 for i in np.arange(len(energy_U0)):
     stroka = "i = {:1d}    energy[i] = {:12.5f}"
@@ -236,7 +235,9 @@ for i in range(len(psi_U0[i])):
         sum += V[0][j] / (energy_U0[0] - energy_U0[j]) * psi_U0[j][i]
     psi0.append(psi_U0[0][i] + sum)
 
-shooting_for_U = Shooting_method(fun_U, U0=-0.99999, ne=101, e2=15, count_e=1)
+
+
+shooting_for_U = Shooting_method(fun_U, U0=-0.99999, ne=101, e2=15, count_e=1, n=n)
 energy_U, psi_U = shooting_for_U.get_energy()
 
 
