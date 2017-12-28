@@ -15,7 +15,7 @@ def convert_electronvolt_to_atomic_units(value):
     return value / 27.212
 
 
-class Pristrelki_method:
+class Shooting_method:
     # initial data (atomic units)
     L = convert_angstrom_to_atomic_units(2.0)
     A = -L
@@ -151,7 +151,7 @@ class Pristrelki_method:
 #############################################################
 V0 = convert_electronvolt_to_atomic_units(20)
 L = convert_angstrom_to_atomic_units(2.0)
-W = 5.0
+W = 4.0
 A = -L
 B = +L
 n = 113
@@ -193,27 +193,28 @@ def plot(U0, U, psi1, psi2):
     plt.ylabel("U0(x), U(x), $\psi$1, $\psi$2 ", fontsize=18, color="k")
     plt.grid(True)
     plt.legend(fontsize=16, shadow=True, fancybox=True, loc='upper right')
-    plt.savefig("second", dpi=300)
+    plt.savefig("graphs", dpi=300)
     plt.show()
 
 
-def check_shodymost(V, energy_U0, psi_U0, value_fun_V ):
-    print("Check 47.12 (shodymost ryada posledovatelnych priblizhenii)")
-    print("Vlm       <<                  El-Em")
+def convergence_check(V, energy_U0, psi_U0, value_fun_V ):
+    print("Convergence of the series of sequential approximations (47.12)")
+    print("   Vlm     <<    El-Em")
     for m in range(len(energy_U0)):
         V.append([])
         for l in range(len(energy_U0)):
             new_value = get_value_V(psi_U0[m], value_fun_V, psi_U0[l])
             V[m].append(new_value)
             if m != l:
-                print(str(abs(new_value)) + "  <<  " + str(abs(energy_U0[m] - energy_U0[l])))
+                # print(str(abs(new_value)) + "  <<  " + str(abs(energy_U0[m] - energy_U0[l])))
+                print("{:1.7f}  <<  {:2.7f}".format(abs(new_value), abs(energy_U0[m] - energy_U0[l])))
 
 
 
-pristrelka_U0 = Pristrelki_method(fun_U_0, U0=-4, ne=101, e2=15, count_e=10)
-energy_U0, psi_U0 = pristrelka_U0.get_energy()
+shooting_for_U0 = Shooting_method(fun_U_0, U0=-0.99999, ne=101, e2=15, count_e=10)
+energy_U0, psi_U0 = shooting_for_U0.get_energy()
 for i in np.arange(len(energy_U0)):
-    stroka = "i = {:1d}    energy[i] = {:12.5e}"
+    stroka = "i = {:1d}    energy[i] = {:12.5f}"
     print(stroka.format(i, energy_U0[i]))
 
 value_fun_V = []
@@ -221,7 +222,7 @@ for x in X:
     value_fun_V.append(fun_V(x))
 
 V = []
-check_shodymost(V, energy_U0, psi_U0, value_fun_V)
+convergence_check(V, energy_U0, psi_U0, value_fun_V)
 
 summa = 0
 for i in range(1, len(energy_U0)):
@@ -235,15 +236,13 @@ for i in range(len(psi_U0[i])):
         sum += V[0][j] / (energy_U0[0] - energy_U0[j]) * psi_U0[j][i]
     psi0.append(psi_U0[0][i] + sum)
 
-pristrelka_U = Pristrelki_method(fun_U, U0=-4, ne=101, e2=15, count_e=1)
-energy_U, psi_U = pristrelka_U.get_energy()
+shooting_for_U = Shooting_method(fun_U, U0=-0.99999, ne=101, e2=15, count_e=1)
+energy_U, psi_U = shooting_for_U.get_energy()
 
 
 
-stroka = "E (method pristrelki) = {:12.5e}"
-print(stroka.format(energy_U[0]))
-stroka = "E (method teorija vozmushenij) = {:12.5e}"
-print(stroka.format(e0))
+print("E (shooting_method) = {:12.5f}".format(energy_U[0]))
+print("E (perturbation theory method) = {:12.5f}".format(e0))
 
 value_U0 = np.array([fun_U_0(X[i]) for i in np.arange(n)])
 value_U = np.array([fun_U(X[i]) for i in np.arange(n)])
